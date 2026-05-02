@@ -1,0 +1,3 @@
+# This project intentionally relies only on Python's standard library.
+# If you decide to extend the agent to use additional packages
+# beautifulsoup4, numpy, transformers, etc.), add them here.
