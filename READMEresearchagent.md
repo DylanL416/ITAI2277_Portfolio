@@ -6,7 +6,7 @@ simple command line tool built for the ITAI2376 capstone project.  The purpose
 of the agent is to demonstrate fundamental principles of agentic AI systems,
 including input processing, tool integration, memory, reasoning, reinforcement
 learning and safety measures.  Although the agent runs entirely offline using
-pre‑defined documents, it can easily be extended to integrate real search
+pre-defined documents, it can easily be extended to integrate real search
 engines, vector databases or large language models.
 
 Contents
@@ -24,7 +24,7 @@ Contents
 Quick Start
 -----------
 
-1. Ensure you have Python 3.8 or newer installed.
+1. Ensure you have Python 3.8 or newer installed.
 2. (Optional) Create a virtual environment: `python3 -m venv venv && source venv/bin/activate`.
 3. Install dependencies:
 
@@ -63,7 +63,7 @@ add more functionality i could:
   `DocumentRetrievalTool` with calls to a search API such as Bing, DuckDuckGo or
   the `browser` tool provided by the course.  Parse the results and return
   document objects.
-* **Improve summarization** – Swap out the naive term‑frequency summariser for
+* **Improve summarization** – Swap out the naive term-frequency summariser for
   a more sophisticated algorithm (e.g. TextRank) or call a language model
   API for abstractive summarisation.
 * **Persist memory** – Currently the agent stores past interactions in memory
@@ -71,5 +71,5 @@ add more functionality i could:
   or a vector store) so that the agent remembers information across sessions.
 * **Refine reinforcement learning** – The `update_summary_length` method uses
   a simple proportional update.  You can experiment with other RL approaches
-  such as Q‑learning or policy gradients to adjust multiple parameters based
+  such as Q-learning or policy gradients to adjust multiple parameters based
   on richer feedback.

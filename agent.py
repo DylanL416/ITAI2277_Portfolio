@@ -12,7 +12,7 @@ external APIs or integrate with services such as Azure AI Studio or LangChain.
 
 Key features provided by this module:
 
-* **DocumentRetrievalTool** – A simple tool that returns pre‑indexed documents
+* **DocumentRetrievalTool** – A simple tool that returns pre-indexed documents
   based on a query string.  Documents are stored in a local dictionary.  Each
   document contains a title, URL, publication date, domain, type (primary or
   secondary) and the full text content.  New documents can be added by editing
@@ -20,7 +20,7 @@ Key features provided by this module:
 * **SummarizationTool** – Implements a naive summarization algorithm that
   selects the top scoring sentences from a document based on term frequency.
   The number of sentences returned is controlled by the ``summary_length``
-  attribute.  Stopwords are removed using a small built‑in list.
+  attribute.  Stopwords are removed using a small built-in list.
 * **CalculationTool** – A simple tool that provides a handful of text
   statistics (word count, sentence count, character count).  This serves as a
   second tool to satisfy the requirement that the agent integrate at least two
@@ -40,14 +40,14 @@ The design of the agent roughly follows a ReAct style architecture:
    query.  It rejects potentially harmful or unsupported requests.
 2. **Memory System** – ``self.memory`` stores a history of previous queries,
    retrieved documents, scores and rewards.  This could be extended to use a
-   persistent vector database for long‑term memory.
+   persistent vector database for long-term memory.
 3. **Reasoning Component** – ``build_report`` contains the core logic for
    deciding which documents to include and how to structure the summary.
    Documents are scored using the CRAAP criteria described in library
    guidelines.  The agent keeps track of its current
    ``summary_length`` parameter and updates it based on feedback.
 4. **Output Generation** – ``generate_output`` assembles the summary text and
-   citations into a human‑readable report.  It returns both the plain text and
+   citations into a human-readable report.  It returns both the plain text and
    a structured representation (list of citations).
 
 The ``main`` function provides a simple command line loop so that the agent can
@@ -58,13 +58,13 @@ can press Ctrl+C or enter an empty string.
 
 Limitations:
 --------------
-This implementation relies on a small set of hard‑coded documents to avoid
+This implementation relies on a small set of hard-coded documents to avoid
 network access.  It uses a very simple summarization algorithm and a naïve
 reinforcement learning update.  These are included to satisfy the capstone
 requirements and demonstrate the core concepts.  In a production setting you
 would replace the retrieval and summarization components with calls to
 search APIs, vector stores and large language models.  Likewise, a more
-sophisticated RL approach could be employed (e.g. policy gradient or Q‑learning).
+sophisticated RL approach could be employed (e.g. policy gradient or Q-learning).
 """
 
 from __future__ import annotations
@@ -98,17 +98,17 @@ class DocumentRetrievalTool:
         # Predefined document collection.  Additional entries can be added here.
         self._documents: List[DocumentRetrievalTool.Document] = [
             self.Document(
-                title="Chain‑of‑Thought Prompting Elicits Reasoning in Large Language Models",
+                title="Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
                 url="https://arxiv.org/abs/2201.11903",
                 date="2023-01-10",
                 domain="arxiv.org",
                 doc_type="primary",
                 content=(
-                    "Chain‑of‑Thought (CoT) prompting is a simple technique that provides a "
+                    "Chain-of-Thought (CoT) prompting is a simple technique that provides a "
                     "series of intermediate reasoning steps to large language models (LLMs). "
                     "Experiments show that CoT prompting improves performance on arithmetic, "
                     "commonsense and symbolic reasoning tasks. For example, eight CoT exemplars "
-                    "on a 540B‑parameter model achieved state of the art accuracy on GSM8K."
+                    "on a 540B-parameter model achieved state of the art accuracy on GSM8K."
                 ),
             ),
             self.Document(
@@ -118,7 +118,7 @@ class DocumentRetrievalTool:
                 domain="arxiv.org",
                 doc_type="primary",
                 content=(
-                    "ReAct combines reasoning traces and task‑specific actions in an interleaved "
+                    "ReAct combines reasoning traces and task-specific actions in an interleaved "
                     "manner. Reasoning traces help the model track and update plans, "
                     "while actions interface with external sources like knowledge bases.  On question "
                     "answering and fact verification benchmarks, ReAct outperforms baselines and reduces "
@@ -162,7 +162,7 @@ class DocumentRetrievalTool:
         Parameters
         ----------
         query: str
-            User provided search string.  The search is case‑insensitive and splits
+            User provided search string.  The search is case-insensitive and splits
             the query into individual terms.
 
         Returns
@@ -185,7 +185,7 @@ class SummarizationTool:
     """A naive text summarization tool based on term frequency.
 
     This tool splits the document into sentences and assigns a score to each
-    sentence based on the frequency of its non‑stopwords.  The top
+    sentence based on the frequency of its non-stopwords.  The top
     ``summary_length`` sentences are returned in their original order.  The
     summarizer does not perform deep linguistic analysis; it serves to satisfy
     project requirements without external dependencies.
