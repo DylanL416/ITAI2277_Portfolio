@@ -28,9 +28,8 @@ This repository contains all course assignments and key topics covered:
 - Achieved high accuracy on medical imaging classification task
 
 ### Files
-- `Braintumor/AI_Medical_Diagnosis_full.ipynb` - Complete implementation
-- `Braintumor/AI Medical Diagnosis_ Brain Tumor Analysis.pptx` - Presentation
-- `Braintumor/Expanded_Brain_Tumor_AI_Report.docx` - Technical report
+- `AI_Medical_Diagnosis_full.ipynb` - Complete implementation
+- `Expanded_Brain_Tumor_AI_Report.docx` - Technical report
 
 ### Tools & Concepts Mastered
 - TensorFlow/Keras for neural networks
@@ -54,14 +53,15 @@ This repository contains all course assignments and key topics covered:
 - **Document Retrieval Tool** - Searches internal document corpus with CRAAP criteria evaluation
 - **Summarization Tool** - Generates summaries with adaptive length based on feedback
 - **Calculation Tool** - Performs computational tasks
-- **Memory System** - Tracks past interactions and user preferences
+- **Memory System** - Logs each query, its sources and its rating, and surfaces related earlier questions when a new query overlaps
 - **Reinforcement Learning** - Updates summary length based on user ratings (0-1 scale)
 
 ### Files
-- `ResearchAssistant/agent.py` - Main agent implementation
-- `ResearchAssistant/Final Project Report Smart Research Assistant Agent_DylanLegault.docx` - Full report
-- `ResearchAssistant/Project Proposal Smart Research Assistant Agent_DylanLegault.docx` - Project proposal
-- `ResearchAssistant/requirements.txt` - Dependencies
+- `agent.py` - Main agent implementation
+- `READMEresearchagent.md` - How to run and extend the agent
+- `Final Project Report Smart Research Assistant Agent_DylanLegault.docx` - Full report
+- `Project Proposal Smart Research Assistant Agent_DylanLegault.docx` - Project proposal
+- `requirements.txt` - Dependencies (standard library only)
 
 ### Tools & Concepts Mastered
 - Agentic AI architecture and tool integration
@@ -83,8 +83,8 @@ This repository contains all course assignments and key topics covered:
 - Identified market patterns and consumer behavior
 
 ### Files
-- `sneakers/sneakers_midterm_team_notebook.ipynb` - Full analysis
-- `sneakers/sneakers.csv` - Dataset
+- `sneakers_midterm_team_notebook (1).ipynb` - Full analysis
+- `sneakers.csv` - Dataset
 
 ### Tools & Concepts Mastered
 - Pandas & NumPy for data manipulation
@@ -138,17 +138,15 @@ This repository contains all course assignments and key topics covered:
 ## 📋 Repository Structure
 
 ```
-AI-Portfolio/
+ITAI2277_Portfolio/
 ├── README.md (this file)
-├── Braintumor/
-│   ├── AI_Medical_Diagnosis_full.ipynb
-│   ├── AI Medical Diagnosis_ Brain Tumor Analysis.pptx
-│   └── Expanded_Brain_Tumor_AI_Report.docx
-├── ResearchAssistant/
-│   ├── agent.py
-│   ├── Final Project Report Smart Research Assistant Agent_DylanLegault.docx
-│   ├── Project Proposal Smart Research Assistant Agent_DylanLegault.docx
-│   └── requirements.txt
-├── sneakers/
-│   ├── sneakers_midterm_team_notebook.ipynb
-│   └── sneakers.csv
+├── AI_Medical_Diagnosis_full.ipynb                    # Project 1
+├── Expanded_Brain_Tumor_AI_Report.docx                # Project 1
+├── agent.py                                           # Project 2
+├── READMEresearchagent.md                             # Project 2
+├── requirements.txt                                   # Project 2
+├── Final Project Report Smart Research Assistant Agent_DylanLegault.docx
+├── Project Proposal Smart Research Assistant Agent_DylanLegault.docx
+├── sneakers_midterm_team_notebook (1).ipynb           # Project 3
+└── sneakers.csv                                       # Project 3
+```
