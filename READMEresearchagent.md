@@ -46,7 +46,9 @@ Quick Start
    document collection, score the results using the CRAAP criteria, generate
    summaries and display citations.  After reviewing the output you will be
    asked to rate the summary from 0 to 1.  The agent uses this feedback to
-   adjust the number of sentences in future summaries.
+   adjust the number of sentences in future summaries.  Each interaction is saved to the agent's memory;
+   when a later query shares a term with an earlier one, the report opens with
+   the related earlier questions, the sources used and how you rated them.
 
 Extending the Agent
 -------------------

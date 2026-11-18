@@ -44,7 +44,7 @@ The design of the agent roughly follows a ReAct style architecture:
 3. **Reasoning Component** – ``build_report`` contains the core logic for
    deciding which documents to include and how to structure the summary.
    Documents are scored using the CRAAP criteria described in library
-   guidelines【839135678671540†L83-L145】.  The agent keeps track of its current
+   guidelines.  The agent keeps track of its current
    ``summary_length`` parameter and updates it based on feedback.
 4. **Output Generation** – ``generate_output`` assembles the summary text and
    citations into a human‑readable report.  It returns both the plain text and
@@ -108,7 +108,7 @@ class DocumentRetrievalTool:
                     "series of intermediate reasoning steps to large language models (LLMs). "
                     "Experiments show that CoT prompting improves performance on arithmetic, "
                     "commonsense and symbolic reasoning tasks. For example, eight CoT exemplars "
-                    "on a 540B‑parameter model achieved state of the art accuracy on GSM8K【889558968840036†L66-L76】."
+                    "on a 540B‑parameter model achieved state of the art accuracy on GSM8K."
                 ),
             ),
             self.Document(
@@ -119,10 +119,10 @@ class DocumentRetrievalTool:
                 doc_type="primary",
                 content=(
                     "ReAct combines reasoning traces and task‑specific actions in an interleaved "
-                    "manner【909090303434876†L49-L69】. Reasoning traces help the model track and update plans, "
+                    "manner. Reasoning traces help the model track and update plans, "
                     "while actions interface with external sources like knowledge bases.  On question "
                     "answering and fact verification benchmarks, ReAct outperforms baselines and reduces "
-                    "hallucinations【909090303434876†L49-L69】."
+                    "hallucinations."
                 ),
             ),
             self.Document(
@@ -134,10 +134,10 @@ class DocumentRetrievalTool:
                 content=(
                     "Reinforcement learning (RL) is a branch of machine learning where an agent learns to "
                     "make decisions through trial and error to maximize cumulative rewards. The agent interacts "
-                    "with an environment, receiving feedback in the form of rewards or penalties【576025642220251†L83-L107】. "
-                    "Key components include the policy, reward function and value function【576025642220251†L112-L119】. "
+                    "with an environment, receiving feedback in the form of rewards or penalties. "
+                    "Key components include the policy, reward function and value function. "
                     "A classic example is a robot navigating a maze by exploring, receiving feedback and "
-                    "adjusting its behaviour until it finds the optimal path【576025642220251†L123-L149】."
+                    "adjusting its behaviour until it finds the optimal path."
                 ),
             ),
             self.Document(
@@ -148,10 +148,10 @@ class DocumentRetrievalTool:
                 doc_type="secondary",
                 content=(
                     "The CRAAP test outlines five criteria for evaluating sources: Currency, Relevance, Accuracy, "
-                    "Authority and Purpose【839135678671540†L132-L145】. Currency refers to the timeliness of the information; "
+                    "Authority and Purpose. Currency refers to the timeliness of the information; "
                     "relevance considers the importance and scope; accuracy assesses reliability and correctness; "
                     "authority examines the source; and purpose asks why the information exists.  These guidelines "
-                    "help researchers decide which sources to trust【839135678671540†L132-L145】."
+                    "help researchers decide which sources to trust."
                 ),
             ),
         ]
@@ -311,9 +311,11 @@ class SummarizationTool:
         # Bound the reward to [0, 1]
         reward = max(0.0, min(1.0, reward))
         # Determine target length: map reward to a sentence count (1–4)
-        target_length = 1 + int(round(reward * 3))
+        # math.floor(x + 0.5) rounds halves up; Python's round() rounds halves to
+        # even, which could leave the length stuck (e.g. 2.5 -> 2).
+        target_length = 1 + math.floor(reward * 3 + 0.5)
         # Update summary length towards target using exponential smoothing
-        new_length = int(round((1 - alpha) * self.summary_length + alpha * target_length))
+        new_length = math.floor((1 - alpha) * self.summary_length + alpha * target_length + 0.5)
         # Ensure length is at least 1
         self.summary_length = max(1, new_length)
 
@@ -402,20 +404,22 @@ class ResearchAssistantAgent:
         score = 0.25 * currency + 0.25 * relevance + 0.25 * ((accuracy + authority_domain) / 2) + 0.25 * purpose
         return min(1.0, max(0.0, score))
 
+    def top_documents(self, query: str, limit: int = 2) -> List[Tuple[DocumentRetrievalTool.Document, float]]:
+        """Retrieve matching documents and return the highest scoring ones."""
+        docs = self.retrieval_tool.search(query)
+        scored_docs = [(doc, self.score_document(doc, query)) for doc in docs]
+        scored_docs.sort(key=lambda pair: pair[1], reverse=True)
+        return scored_docs[:limit]
+
     def build_report(self, query: str) -> Tuple[str, List[Dict[str, str]]]:
         """Retrieve documents, summarize them and assemble a report.
 
         Returns the report text and a list of citations.  The citations list
         contains dictionaries with keys 'index', 'title' and 'url'.
         """
-        docs = self.retrieval_tool.search(query)
-        if not docs:
+        top_docs = self.top_documents(query)
+        if not top_docs:
             return ("No documents found for the query.", [])
-        # Score and sort documents
-        scored_docs = [(doc, self.score_document(doc, query)) for doc in docs]
-        scored_docs.sort(key=lambda pair: pair[1], reverse=True)
-        # For demonstration we limit to top 2 documents
-        top_docs = scored_docs[:2]
         report_lines: List[str] = []
         citations: List[Dict[str, str]] = []
         for idx, (doc, score) in enumerate(top_docs, start=1):
@@ -442,6 +446,32 @@ class ResearchAssistantAgent:
         """Store the interaction in memory for future reference."""
         self.memory.append({"query": query, "docs": docs, "reward": reward})
 
+    def recall(self, query: str) -> List[Dict[str, object]]:
+        """Return past interactions that share at least one term with ``query``.
+
+        This lets the agent keep context across turns: when a user asks about a
+        topic related to an earlier question, the report reminds them of that
+        earlier query, the sources it used and how they rated it.
+        """
+        terms = {t.lower() for t in re.split(r"\W+", query) if t.strip()}
+        related = []
+        for entry in self.memory:
+            past_terms = {t.lower() for t in re.split(r"\W+", str(entry["query"])) if t.strip()}
+            if terms & past_terms:
+                related.append(entry)
+        return related
+
+    def format_recall(self, query: str) -> str:
+        """Describe related past interactions, or return an empty string."""
+        related = self.recall(query)
+        if not related:
+            return ""
+        lines = ["Related earlier questions:"]
+        for entry in related[-3:]:
+            titles = ", ".join(d.title for d in entry["docs"]) or "no sources found"
+            lines.append(f"- \"{entry['query']}\" (you rated it {entry['reward']:.1f}; sources: {titles})")
+        return "\n".join(lines) + "\n\n"
+
 
 def main() -> None:
     """Simple command line interface to interact with the agent."""
@@ -457,8 +487,9 @@ def main() -> None:
             if not validated:
                 print("Sorry, that query is not allowed. Please try another topic.")
                 continue
+            context = agent.format_recall(validated)
             result = agent.generate_output(validated)
-            print("\n" + result)
+            print("\n" + context + result)
             # Ask for feedback
             while True:
                 feedback = input("\nRate this summary from 0 (bad) to 1 (excellent): ").strip()
@@ -467,7 +498,10 @@ def main() -> None:
                     break
                 except ValueError:
                     print("Please enter a number between 0 and 1.")
+            reward = max(0.0, min(1.0, reward))
             agent.update_from_reward(reward)
+            used_docs = [doc for doc, _ in agent.top_documents(validated)]
+            agent.log_interaction(validated, used_docs, reward)
             print(f"Thank you!  The agent will adapt its summary length to {agent.summarizer.summary_length} sentences.")
     except KeyboardInterrupt:
         print("\nInterrupted. Exiting.")
